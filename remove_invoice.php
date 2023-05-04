@@ -1,6 +1,19 @@
 <?php
 require "dbconnection.php";
 
+$db = createDbConnection();
+
+$body = file_get_contents('php://input');
+$data = json_decode($body);
+
+$invoice_item_id = strip_tags($data->invoiceid);
 
 
-$invoice_item_id;
+$sql = "DELETE FROM invoice_items WHERE invoiceid = ?";
+
+
+$statement = $db->prepare($sql);
+
+$statement->execute(array($invoice_item_id));
+
+echo "Onnistui";
