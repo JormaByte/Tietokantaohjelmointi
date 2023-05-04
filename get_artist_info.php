@@ -1,0 +1,3 @@
+<?php
+
+$artist_id;
