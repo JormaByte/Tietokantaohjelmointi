@@ -3,39 +3,36 @@
 require "dbconnection.php";
 $db = createDbConnection();
 
-$body = file_get_contents("php://input");
-$data = json_decode($body);
+// YHTIÖ PERUSTAA UUDEN TOIMIPISTEEN RANSKAAN,
+//JONNE LÄHETETÄÄN SALES MANAGER NANCY SEKÄ 
+// IT-PUOLEN ROBERT.
 
-$artist_id = strip_tags($data->id);
+//SAMALLA YHTIÖ OTTAA KÄYTTÖÖN UUDEN KOKEELLISEN
+// KVANTTIAUDIO - MEDIATIEDOSTON.
+
+
+$Country = "France";
+$mType = "Quantum audio file";
+$MediaTypeId = "6";
+
 
 try{
     $db->beginTransaction();
 
-    $db->exec("DELETE FROM invoice_items 
-    WHERE TrackId IN (SELECT TrackId FROM tracks 
-    WHERE AlbumId IN(SELECT AlbumId FROM albums 
-    WHERE ArtistId In( SELECT ArtistId FROM artists 
-    WHERE ArtistId = $artist_id)))");
+    $statement1 = $db->prepare("UPDATE employees SET Country = '$Country' WHERE EmployeeId LIKE 2 OR LIKE 7");
 
-    $db->exec("DELETE FROM playlist_track 
-    WHERE TrackId IN (SELECT TrackId FROM tracks 
-    WHERE AlbumId IN(SELECT AlbumId FROM albums 
-    WHERE ArtistId In( SELECT ArtistId FROM artists 
-    WHERE ArtistId = $artist_id)))");
+    $statement1->execute(array($Country));
 
-    $db->exec("DELETE FROM tracks
-    WHERE AlbumId IN (SELECT AlbumId FROM albums
-    WHERE ArtistId IN(SELECT ArtistId FROM artists
-    WHERE ArtistId = $artist_id))");
+    
 
-    $db->exec("DELETE FROM albums
-    WHERE ArtistId = $artist_id");
+    $statement2 = $db->prepare("INSERT INTO media_types VALUES ('$mType', '$MediaTypeId')");
 
-    $db->exec("DELETE FROM artists
-    WHERE ArtistId = $artist_id");
+    $statement2->execute(array($mType, $MediaTypeId));
+
 
     $db->commit();
+    
 } catch(Exception $e){
     $db->rollBack();
-    echo "Failed:".$e->getMessage();
+   $e->getMessage();
 }
