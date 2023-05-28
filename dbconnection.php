@@ -17,7 +17,7 @@ function createDbConnection() {
     return $db;
   } catch (PDOException $e) {
 
-    echo $e->getMessage();
+   
   }
 
   
